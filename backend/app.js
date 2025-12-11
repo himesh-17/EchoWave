@@ -5,6 +5,9 @@ import {Server} from "socket.io";
 import cors from "cors" ; 
 import { connetToSocket } from "./src/controllers/socket.js";
 
+// User Api 
+import userRoutes from "./src/routes/user.routes.js"
+
 
 const app = express();
 const server = createServer(app);
@@ -12,7 +15,9 @@ const io = connetToSocket(server);
 
 app.use(cors());
 app.use(express.json({limit : "40kb"}));
-app.use(express.urlencoded({limit:"40kb" , extended : true}))
+app.use(express.urlencoded({limit:"40kb" , extended : true}));
+
+app.use("/api/v1/users" , userRoutes);
 
 
 // DB connection
@@ -32,3 +37,5 @@ const start = async ()=>{
 });
 }
 start();
+
+
