@@ -1,8 +1,8 @@
 import express from "express";
-import mongoose  from "mongoose";
-import {createServer} from "node:http";
-import {Server} from "socket.io";
-import cors from "cors" ; 
+import mongoose from "mongoose";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
+import cors from "cors";
 import { connetToSocket } from "./src/controllers/socket.js";
 
 // User Api 
@@ -14,27 +14,27 @@ const server = createServer(app);
 const io = connetToSocket(server);
 
 app.use(cors());
-app.use(express.json({limit : "40kb"}));
-app.use(express.urlencoded({limit:"40kb" , extended : true}));
+app.use(express.json({ limit: "40kb" }));
+app.use(express.urlencoded({ limit: "40kb", extended: true }));
 
-app.use("/api/v1/users" , userRoutes);
+app.use("/api/v1/users", userRoutes);
 
 
 // DB connection
 async function main() {
-await mongoose.connect("mongodb+srv://Zoom:Zoom0117@zoom.rxnv43m.mongodb.net/");
+    await mongoose.connect("mongodb+srv://Zoom:Zoom0117@zoom.rxnv43m.mongodb.net/");
 }
-main().then(()=>{
+main().then(() => {
     console.log("DB is connected");
 }).catch(err => console.log(err));
 
-app.set("port" , (process.env.PORT || 8000));
+app.set("port", (process.env.PORT || 8000));
 
 
-const start = async ()=>{
-    server.listen(app.get("port") ,()=>{
-    console.log("app is listing to the port 8000")
-});
+const start = async () => {
+    server.listen(app.get("port"), () => {
+        console.log("app is listing to the port 8000")
+    });
 }
 start();
 
