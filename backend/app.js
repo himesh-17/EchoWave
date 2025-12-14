@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import cors from "cors";
-import { connetToSocket } from "./src/controllers/socket.js";
+import { connectToSocket } from "./src/controllers/socket.js";
 
 // User Api 
 import userRoutes from "./src/routes/user.routes.js"
@@ -11,7 +11,7 @@ import userRoutes from "./src/routes/user.routes.js"
 
 const app = express();
 const server = createServer(app);
-const io = connetToSocket(server);
+const io = connectToSocket(server);
 
 app.use(cors());
 app.use(express.json({ limit: "40kb" }));
@@ -30,10 +30,9 @@ main().then(() => {
 
 app.set("port", (process.env.PORT || 8000));
 
-
 const start = async () => {
     server.listen(app.get("port"), () => {
-        console.log("app is listing to the port 8000")
+        console.log(`app is listing to the port 8000`);
     });
 }
 start();
