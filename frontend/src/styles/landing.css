@@ -1,58 +1,127 @@
+/* ===== LANDING PAGE ===== */
 .landingPageContainer {
   width: 100vw;
   height: 100vh;
-  background: url("/public/background.png");
+  background:
+    linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+    url("/public/background.png");
   background-repeat: no-repeat;
   background-size: cover;
   color: white;
+  font-family: "Inter", "Poppins", sans-serif;
+  overflow: hidden;
 }
 
-.landingPageContainer nav{
- padding-inline: 1.2rem;
+/* ===== NAVBAR ===== */
+.landingPageContainer nav {
+  padding-inline: 1.6rem;
   padding-block: 1.6rem;
   display: flex;
-  justify-content : space-between;
+  justify-content: space-between;
   align-items: center;
+  animation: slideDown 0.8s ease forwards;
 }
 
 .landingPageContainer nav h2 {
-  font-size: 1.8rem;
-  font-weight: 500;
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .landingPageContainer nav .navList {
   display: flex;
-  gap: 1.6rem;
+  gap: 1.8rem;
+}
+
+.landingPageContainer nav .navList span {
   cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-.landingMainContainer{
-display: flex;
-justify-content: space-between;
-padding-inline: 3rem;
-height: 80vh; 
-align-items: center;
+.landingPageContainer nav .navList span:hover {
+  opacity: 1;
+  transform: translateY(-2px);
 }
 
-.landingMainContainer>div:nth-child(1) {
-  font-size: 1.7rem;
+/* ===== MAIN CONTENT ===== */
+.landingMainContainer {
+  display: flex;
+  justify-content: space-between;
+  padding-inline: 3.2rem;
+  height: 80vh;
+  align-items: center;
 }
 
-.landingMainContainer>div:nth-child(1) div[role='button'] {
-  background: #D97500;
+/* LEFT TEXT */
+.landingMainContainer > div:nth-child(1) {
+  font-size: 1.8rem;
+  max-width: 520px;
+  line-height: 1.4;
+  animation: fadeLeft 1s ease forwards;
+}
+
+/* CTA BUTTON */
+.landingMainContainer > div:nth-child(1) div[role="button"] {
+  background: linear-gradient(135deg, #ff9839, #ff7b00);
   width: fit-content;
-  padding: 1rem;
-  border-radius: 20px;
-  margin-top: 1.9rem;
+  padding: 0.9rem 1.6rem;
+  border-radius: 999px;
+  margin-top: 2rem;
+  box-shadow: 0 10px 25px rgba(255, 152, 57, 0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.landingMainContainer>div:nth-child(1) div[role='button'] a {
+.landingMainContainer > div:nth-child(1) div[role="button"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 35px rgba(255, 152, 57, 0.55);
+}
+
+.landingMainContainer > div:nth-child(1) div[role="button"] a {
   text-decoration: none;
   color: white;
-  font-size: 1.7rem;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
-.landingMainContainer>div:nth-child(2) img {
-  height: 70vh;
+/* RIGHT IMAGE */
+.landingMainContainer > div:nth-child(2) img {
+  height: 68vh;
   width: auto;
+  animation: fadeRight 1.2s ease forwards;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
