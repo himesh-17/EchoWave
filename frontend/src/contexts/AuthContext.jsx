@@ -47,8 +47,6 @@ export const AuthProvider = ({ children }) => {
                 localStorage.setItem("token" , request.data.token);
                 navigate("/home")
             }
-
-
             
         } catch (err) {
             throw err ; 

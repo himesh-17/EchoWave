@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Button from "@mui/material/Button";
 import "../styles/auth.css";
+import { AuthContext } from "../contexts/AuthContext";
+
 
 export default function Authentication() {
-  const [mode, setMode] = useState("signin"); // signin | signup
+  const [mode, setMode] = useState("signup"); // signin | signup
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -20,12 +22,14 @@ export default function Authentication() {
       return "Username is required";
     }
 
-    if (password.length < 6) {
-      return "Password must be at least 6 characters";
+    if (password.length < 8) {
+      return "Password must be at least 8 characters";
     }
 
     return "";
   }
+
+  const { handleRegister, handleLogin } = useContext(AuthContext);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -39,17 +43,22 @@ export default function Authentication() {
 
     setLoading(true);
 
-    const payload =
-      mode === "signup"
-        ? { name, username, password }
-        : { username, password };
+    try {
+      if (mode === "signup") {
+        let result = await handleRegist(name, username, password);
+        console.log(result);
+      }
+      if (mode === "signin") {
+        let result = await handleLogin(username , password);
+        console.log(result);
+      }
 
-    // simulate API call
-    setTimeout(() => {
-      console.log("AUTH PAYLOAD:", payload);
-      setLoading(false);
-    }, 1500);
+    } catch (error) {
+      let message = (error.response.data.message);
+      setError(message);
+    }
   }
+
 
   function handleGuestJoin() {
     console.log("Joining as guest...");
@@ -121,8 +130,8 @@ export default function Authentication() {
             {loading
               ? "Please wait..."
               : mode === "signin"
-              ? "Sign In"
-              : "Create Account"}
+                ? "Log In"
+                : "Register"}
           </Button>
         </form>
 
