@@ -3,7 +3,6 @@ import Button from "@mui/material/Button";
 import "../styles/auth.css";
 import { AuthContext } from "../contexts/AuthContext";
 
-
 export default function Authentication() {
   const [mode, setMode] = useState("signup"); // signin | signup
   const [name, setName] = useState("");
@@ -12,6 +11,9 @@ export default function Authentication() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+
+  const { handleRegister, handleLogin } = useContext(AuthContext);
 
   function validate() {
     if (mode === "signup" && name.trim().length < 2) {
@@ -29,11 +31,10 @@ export default function Authentication() {
     return "";
   }
 
-  const { handleRegister, handleLogin } = useContext(AuthContext);
-
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    setMessage("");
 
     const validationError = validate();
     if (validationError) {
@@ -45,58 +46,63 @@ export default function Authentication() {
 
     try {
       if (mode === "signup") {
-        let result = await handleRegist(name, username, password);
-        console.log(result);
+        const res = await handleRegister(name, username, password);
+        setMessage(res?.message || "Registration successful");
+        setName("");
+        setUsername("");
+        setPassword("");
+      } else {
+        const res = await handleLogin(username, password);
+        setUsername("");
+        setPassword("");
+        setMessage(res?.message || "Login successful");
       }
-      if (mode === "signin") {
-        let result = await handleLogin(username , password);
-        console.log(result);
-      }
-
-    } catch (error) {
-      let message = (error.response.data.message);
-      setError(message);
+    } catch (err) {
+      setError(
+        err?.response?.data?.message || "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
-
-  function handleGuestJoin() {
-    console.log("Joining as guest...");
+  function switchMode(newMode) {
+    setMode(newMode);
+    setError("");
+    setMessage("");
   }
 
   return (
     <div className="authContainer">
       <div className="authCard">
-        {/* Branding */}
         <h2 className="appTitle">EchoWave</h2>
+
         <p className="appTagline">
           {mode === "signin"
             ? "Join meetings instantly. No friction."
             : "Create your account and start meetings in seconds."}
         </p>
 
-        {/* Mode Toggle */}
         <div className="authToggle">
           <button
             type="button"
             className={mode === "signin" ? "active" : ""}
-            onClick={() => setMode("signin")}
+            onClick={() => switchMode("signin")}
           >
             Sign In
           </button>
           <button
             type="button"
             className={mode === "signup" ? "active" : ""}
-            onClick={() => setMode("signup")}
+            onClick={() => switchMode("signup")}
           >
             Sign Up
           </button>
         </div>
 
-        {/* Error */}
         {error && <p className="errorText">{error}</p>}
+        {message && <p className="successText">{message}</p>}
 
-        {/* Form */}
         <form onSubmit={handleSubmit}>
           {mode === "signup" && (
             <input
@@ -130,24 +136,11 @@ export default function Authentication() {
             {loading
               ? "Please wait..."
               : mode === "signin"
-                ? "Log In"
-                : "Register"}
+              ? "Log In"
+              : "Register"}
           </Button>
         </form>
 
-        {/* Divider */}
-        {/* <div className="divider">OR</div> */}
-
-        {/* Guest Join */}
-        {/* <Button
-          variant="text"
-          onClick={handleGuestJoin}
-          className="guestBtn"
-        >
-          Join as Guest
-        </Button> */}
-
-        {/* Privacy hint */}
         <p className="privacyHint">
           🔒 Camera & microphone access is only requested during meetings.
         </p>

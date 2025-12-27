@@ -99,6 +99,18 @@
   margin-bottom: 1rem;
 }
 
+/* ===== SUCCESS TEXT ===== */
+.successText {
+  background: rgba(60, 255, 140, 0.15);
+  color: #a6ffd1;
+  padding: 0.6rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  animation: fadeUp 0.4s ease;
+}
+
+
 /* ===== FORM ===== */
 form {
   margin-top: 0.8rem;

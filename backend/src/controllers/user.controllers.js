@@ -17,6 +17,7 @@ const register = async (req, res) => {
             password: hashedPassword
         });
         await newUser.save();
+        console.log(newUser);
         res.status(httpStatus.CREATED).json({ message: "User Registered" });
     } catch (e) {
         res.json({ message: `Something went wrong ${e}` });
@@ -32,6 +33,7 @@ const login = async (req, res) => {
     }
     try {
         const user = await User.findOne({ username });
+        console.log(user);
         if (!user) {
             res.status(httpStatus.NOT_FOUND).json({ message: "User Not Found" });
         }
@@ -40,6 +42,7 @@ const login = async (req, res) => {
             let token = crypto.randomBytes(20).toString("hex");
 
             user.token = token;
+
             await user.save();
             return res.status(httpStatus.OK).json({ token: token })
         }
