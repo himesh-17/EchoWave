@@ -4,8 +4,6 @@ let connections = {};
 let messages = {};
 let timeOnLine = {};
 
-
-
 export const connectToSocket = (server) => {
     const io = new Server(server, {
         cors: {
@@ -15,7 +13,7 @@ export const connectToSocket = (server) => {
             credentials: true
         }
     });
-
+    
     io.on("connection", (socket) => {
 
         console.log("user connected", socket.id);
@@ -25,9 +23,7 @@ export const connectToSocket = (server) => {
             if (connections[path] === undefined) {
                 connections[path] = []
             }
-
             connections[path].push(socket.id);
-
             timeOnLine[socket.id] = new Date();
 
             for (let a = 0; a < connections[path].length; a++) {
@@ -37,7 +33,7 @@ export const connectToSocket = (server) => {
 
             if (messages[path] !== undefined) {
                 for (let a = 0; a < messages[path].length; ++a) {
-                    io.to(socket.id).emit("chat-message", messages[path]['data'],
+                    io.to(socket.id).emit("chat-message", messages[path][data],
                         messages[path][a]["sender"], messages[path][a]["socket-id-sender"]);
                 }
             }
@@ -54,7 +50,7 @@ export const connectToSocket = (server) => {
                     if (!isFound && roomValue.includes(socket.id)) {
                         return [roomKey, true];
                     }
-                    return [roomKey, isFound];
+                    return [room, isFound];
                 }, ["", false]);
 
             if (found == true) {
@@ -74,7 +70,7 @@ export const connectToSocket = (server) => {
             var timeDiff = Math.abs(timeOnLine[socket.id] - new Date());
             var key;
 
-            for ([room, person] of JSON.parse(JSON.stringify(Object.entries(connections)))) {
+            for (const [room, person] of JSON.parse(JSON.stringify(Object.entries(connections)))) {
 
                 for (let i = 0; i < person.length; i++) {
                     if (person[i] == socket.id) {
@@ -97,8 +93,8 @@ export const connectToSocket = (server) => {
 
         });
 
-
     });
     return io;
-}
+};
+
 

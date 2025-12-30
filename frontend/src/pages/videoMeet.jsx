@@ -4,6 +4,8 @@ import { io } from "socket.io-client";
 
 const server = "http://localhost:8000/";
 
+var connections = {};
+
 
 export default function VideoMeet() {
 
@@ -17,9 +19,9 @@ export default function VideoMeet() {
 
   let [audioAvailable, setAudioAvailable] = useState(true);
 
-  let [video, setVideo] = useState();
+  let [video, setVideo] = useState([]);
 
-  let [audio, setAudio] = useState();
+  let [audio, setAudio] = useState([]);
 
   let [screen, setScreen] = useState();
 
@@ -104,11 +106,113 @@ export default function VideoMeet() {
     }
   }, [video, audio]);
 
+
+  // todo 
+  let gotMessgeFromServer = (fromId, message) => {
+
+  }
+
+  // todo addMessage
+
+  let addMessage = () => {
+
+  }
+
   let connectTOSocketServer = () => {
+
     socketRef.current = io.connect(server, { secure: false });
-    socketRef.current.on("connect" , ()=>{
-      socketRef.current.emit("join-call" , window.location.href);
-    })
+
+    socketRef.current.on("signal", gotMessgeFromServer);
+
+
+    socketRef.current.on("connect", () => {
+      socketRef.current.emit("join-call", window.location.href);
+      socketIdRef.current = socketRef.current.id;
+
+      socketRef.current.on("chat-message", addMessage);
+
+      socketRef.current.on("user-left", (id) => {
+        setVideos((videos).filter((video) => { video.socketId !== id }))
+      });
+
+      socketRef.current.on("user-joined", (id, clients) => {
+        clients.forEach((socketListId) => {
+
+
+          connections[socketListId] = new RTCPeerConnection(peerConfigConnections);
+
+
+          connections[socketListId].oneicecandidate = (event) => {
+            if (event.candidate != null) {
+              socketRef.current.emit("signal", socketListId, JSON.stringify({ "ice": event.candidate }))
+            }
+          }
+
+
+          connections[socketListId].onaddStream = (event) => {
+            let videoExists = videoRef.current.find(videos => video.socketId === socketListId);
+
+
+            if (videoExists) {
+              setVideos(videos => {
+                const updatedVideos = videos.map(video =>
+                  video.socketId === socketListId ? { ...video, stream: event.stream } : video
+                );
+                videoRef.current = updatedVideos;
+                return updatedVideos;
+              })
+            } else {
+              let newVideo = {
+                socketId: socketListId,
+                stream: event.stream,
+                autoPlay: true,
+                playsincline: true
+              }
+
+              setVideos(videos => {
+                const updatedVideos = [...videos, newVideo];
+                videoRef.current = updatedVideos;
+                return updatedVideos;
+              })
+            }
+          };
+
+          if(window.localStream !== undefined && window.localStream !== null){
+            connections[socketListId].addStream(window.localStream);
+          }else{
+            // todo blacksilence 
+            let blackSilence
+          }
+
+        });
+
+        if(id === socketIdRef.current){
+          for(id2 in connections){
+            if(id == socketIdRef.current) continue; 
+
+
+            try {
+              connections[id2].addStream(window.localStream);
+              
+            } catch (error) {
+              connections[id2].createOffer().then((description)=>{
+                connections[id2].setLocalDescription(description)
+                .then(()=>{
+                  socketRef.current.emit("signal" , id2 , JSON.stringify({"sdp" : connections[id2].localDescription}));
+                }).catch(e=>{
+                  console.log(e)
+                })
+              })
+            }
+          }
+        }
+
+
+      });
+
+
+
+    });
 
   }
 
@@ -136,7 +240,7 @@ export default function VideoMeet() {
           onChange={e => { setUsername(e.target.value) }}
         />
         <Button variant="contained"
-        onClick={connect}
+          onClick={connect}
         >
           Connect
         </Button>
